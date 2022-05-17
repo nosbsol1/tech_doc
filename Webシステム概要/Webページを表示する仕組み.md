@@ -25,17 +25,16 @@ Webサイトを表示する仕組みがいまいちよく分からない人
 1. （人）ブラウザ上にURLを入力
 
 
-1. （ブラウザ）URLに対応するIPをDNSサーバーから取得
-DNSという仕組みでURLに対応するIPを取得します。  
-DNSとやり取りする機能はOSに備わっており、ブラウザがそれを利用しています。
+1. （ブラウザ）URLからWebサーバーのIPを取得  
+通信先のWebサーバーのIPを、DNSという仕組みを利用して取得します。  
 
-1. （ブラウザ）IPを取得したWebサーバーに対して、HTTPリクエストと呼ばれる形式のメッセージを送信
-送信する処理はOSに依頼しています。
+
+1. （ブラウザ）Webサーバーに対してHTTPリクエストを送信  
+どのページを開きたいかなどの情報を含んだ、Httpリクエストという文字列をWebサーバーに送信します。  
 
 1. （Webサーバー）HTTPリクエストを受け取り、返却するHtmlを用意  
 Htmlとはブラウザが画面を描画する為に必要なファイルです。  
-このほかにもcssやjavascriptなどのファイルも返却します。  
-詳しくは後ほど説明します。  
+
 
 1. （Webサーバー）HTTPレスポンスと呼ばれる形式のメッセージで用意したHTMLを返却
 
@@ -123,7 +122,7 @@ DNSサーバーはOSに設定されています。
 <img src="画像/DNSの設定箇所.png" style="width:680px;">
 
 
-DNSについてはネットワーク的な話になるので、概要だけの説明になります。
+DNS関連はネットワーク的な話になるので、概要だけの説明になります。  
 詳しく知りたい方は以下の書籍を参照してください。  
 [ネットワークはなぜつながるのか](https://www.amazon.co.jp/dp/4822283119)
 
@@ -345,7 +344,7 @@ Webページには内容が変わらない静的ファイル（ヘルプペー�
 
 動的ファイルの場合は、データベースから取り出した情報をもとにHtmlファイルを作成する、といった処理が必要になります。  
 この際にjavaなどの言語で書かれたプログラムを呼び出す必要があります。  
-このあたりは別記事で詳しく説明します。  
+詳しくは別記事で解説します。  
 
 
 ### 4.（Webサーバー）コンテンツをHTTPレスポンスで返却
@@ -513,28 +512,24 @@ HTMLの要素をどのように表示するかを指示するものです。
 Cssは以下のように記載します。  
 
 例  
-'''
+```
+<h1 style="background-color:blue;">見出しです</h1>
+```  
 
-'''
+この例ではHtmlのstyle属性にcssを設定しており、背景色を青にするように指定しています。(Cssの記述場所は後ほど説明します)  
 
-
-この例は、この要素の背景色は赤、という定義しています。  
+上記のHtmlは以下のように描画されます。  
+<h1 style="background-color:blue;">見出しです</h1>
+  
 他にも、例えば以下のような定義が可能です。
-
-・background-color   
-要素の背景色を指定します。  
-例  
-`background-color: red`  
-
-
 
 ・width、height  
 幅、高さを指定します。  
 例  
-`background-color: red`  
+`width:120px;height:120px;`  
 
 
-このようなCssの仕様(backgroundcolorは背景色を表す、などのルール)はW3Cという団体によって[策定](https://www.w3.org/Style/CSS/specs.en.html)されています。  
+
 
 #### CSSの構文
 cssの構文は以下になります。  
@@ -543,25 +538,79 @@ cssの構文は以下になります。
 複数ある場合は続けて記述します。  
 例  
 ```
-
+background-color:blue;color:white;width:120px;height:120px;
 ```
+
+#### CSSの仕様  
+Cssの仕様(background-colorは背景色を表す、などのルール)はW3Cという団体によって[策定](https://www.w3.org/Style/CSS/specs.en.html)されています。 
+
 
 #### CSSの適用方法
 cssの適用方法は3つあります。  
 
-1. タグのstyle属性に直接指定する  
+##### タグの`style`属性に直接指定する  
+Htmlの全てのタグには`style`という属性を指定でき、そこにcssを指定できます。  
 
-1. `<style>`タグの内部に記載する  
+例  
+```
+<h1 style="backgroundcolor:red;">見出しです</h1>
+```  
 
-1. 外部ファイルに記載し、`<style>`タグから参照する
+
+##### `<style>`タグの内部に記載する  
+htmlの`<style>`タグ内に記載します。  
+例  
+```
+<style>
+
+h1 {
+  background-color: blue;
+}
+
+</style>
+
+～～略～～
+
+<h1>見出しです。</h1>
+```
+
+この場合、**セレクタ**と呼ばれる、どのタグにスタイルを適用するかを指定します。  
+```
+セレクタ {
+  CSSの定義
+}
+```
+
+##### 外部ファイルに記載し、`<link>`タグで読み込む  
+htmlとはファイルにcssを定義し、httpでアクセス出来る場所に配置しておきます。  
+htmlの`<link>`タグの`href`属性でそのファイルのURLを指定すると、ブラウザがそのファイルを読み込み、セレクタにマッチする属性に適用してくれます。  
+
+・外部CSS
+mycss.css
+```
+h1 {
+  background-color: blue;
+}
+
+button {
+  color: red;
+}
+```
+
+・HTML
+```
+<link href="http://～～/mycss.css" rel="stylesheet"/>
+
+～
+
+<h1>見出しです。</h1>
+```
 
 
 直接記述する方法だと記述箇所が増えた際に管理が大変になるため、外部ファイルとして定義する事も多いです。  
 ②、③の方法で記載する場合は、***セレクタ***という、どの要素にどの定義を適用するかという情報を記載します。  
 
 セレクタ含めたCssの詳しい仕様については別の記事で解説します。  
-
-
 
 
 ### Javascriptとは
@@ -608,37 +657,36 @@ javascriptはHtml要素の**イベント**発生時に呼び出される事が�
 イベントとは、ある要素に対して行った動作や、起きた出来事の事です。  
 (クリックされた、キーが押された、要素が読み込まれた　など)
 
-HTML上で、これらのイベントが発生したときに実行するjavascriptを指定することが出来ます。  
-この指定したjavascriptを**イベントハンドラ**と呼びます。  
+各イベントが発生した際に指定したJavascriptを実行できます。  
+実行する処理を登録する仕組みを**イベントハンドラ**と呼びます。 
 
-イベントハンドラはHTML要素の属性として指定します。  
-`<tag イベント属性名="Javascriptのコード(イベントハンドラ)"`という形式で記述します。  
+イベントハンドラはイベント毎に用意されています。  
+例えばクリックされた際のイベントには`onclick`というイベントハンドラが用意されています。  
 
-イベントが発生した際にどのイベント属性（に設定されたjavascript）が呼ばれるかは仕様で決まっています。  
-例えば、クリックされた際は`onclick`属性が呼ばれる、などです。  
-
+イベントハンドラはHTML要素の属性として以下のように記述します。  
+`<tag イベント属性名="Javascriptのコード"`
 
 以下はボタンを実行すると画面上に「サンプルです。」と表示したい場合のコードです。  
 
 ```
 <script>
-  function myEventHandler(){
+  function myOnClick(){
     alert("サンプルです。")
   }
 </script>
 
-<button onClick="myEventHandler">クリック</button>
+<button onClick="myOnClick">クリック</button>
 ```
 
 この例を描画すると以下になります。  
 <div>
 <script>
-  function myEventHandler(){
+  function myOnClick(){
     alert("サンプルです。")
   }
 </script>
 
-<button onClick="myEventHandler">クリック</button>
+<button onClick="myOnClick">クリック</button>
 
 </div>
 
@@ -657,12 +705,54 @@ HTML上で、これらのイベントが発生したときに実行するjavascr
 #### Javascriptの適用方法
 javascriptの記載方法も、cssと同じく３つあります。  
 
-1. タグのイベント属性に直接指定する  
+##### タグのイベント属性に直接指定する  
+Htmlのイベントハンドラ属性に直接設定します。  
+例  
+```
+<button onClick="alert(`サンプルです`)">クリック</button>
+```
 
-1. `<script>`タグの内部に記載する  
+##### `<script>`タグの内部に記載する  
 
-1. 外部ファイルに記載し、`<script>`タグから参照する
+htmlの`<script>`タグ内に記載します。  
+そこで定義した関数を、HTMLタグのイベントハンドラで指定できます。  
 
+例  
+```
+<script>
+  function myOnClick(){
+    alert("サンプルです。")
+  }
+</script>
+
+～～略～～
+
+<button onClick="myOnClick">クリック</button>
+```
+
+##### 外部ファイルに記載し、`<script>`タグから参照する
+CSSと同じように、javascriptもHtmlと別のファイルに定義できます。  
+htmlの`<script>`タグの`src`属性でそのファイルのURLを指定すると、ブラウザがそのファイルを読み込み適用してくれます。 
+
+・外部Javascript
+myscript.js
+```
+function myOnClick(){
+  alert("サンプルです。")
+}
+```
+
+・HTML
+```
+<script src="http://～/myscript.js"></script>
+
+～
+
+<button onClick="myOnClick">クリック</button>
+```
+
+
+直接記述する方法だと記述箇所が増えた際に管理が大変になるため、外部ファイルとして定義する事も多いです。  
 
 ### Javascriptの仕様 
 javascriptの仕様も標準化団体によって定められているのですが、以下の2つの仕様があります。  
@@ -710,14 +800,6 @@ htmlのタグにはCSSとJavaScriptファイルを読み込むためのタグが
 
 
 図
-
-
-- css
-`<style>`タグで指定します。
-例
-
-- javascript
-`<style>`
 
 
 
@@ -800,4 +882,4 @@ IEは2022/6月でサポートが終了しますが、古い業務アプリなど
 [JavaScript Primer](https://jsprimer.net/)  
 
 - 書籍  
-[ネットワークはなぜつながるのか](https://www.amazon.co.jp/dp/4822283119)
+[ネットワークはなぜつながるのか](https://www.amazon.co.jp/dp/4822283119)  
