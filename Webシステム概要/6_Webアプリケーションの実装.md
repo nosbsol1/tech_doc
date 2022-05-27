@@ -180,3 +180,31 @@ Webアプリケーション実装時の仕様。
 図  
 
 .NETも今はこの形式になっています。  
+
+
+servlet-apiとAPサーバーの関係  
+https://stackoverflow.com/questions/25256768/understanding-who-provides-servlet-api-jar-is-it-web-container-or-part-of-java
+
+各AppサーバーのJ2EEのjar  
+https://www.microfocus.co.jp/manuals/ED60/VS2017/GUID-7B2BE673-515D-4204-9B5E-F23B4603D4AE.html
+
+サーブレットの実装  
+https://qiita.com/toshi_solution/items/75560ac5353a16703ddc
+
+https://www.ulsystems.co.jp/archives/035.html
+
+spring mvc  
+https://spring.pleiades.io/spring-framework/docs/current/reference/html/web.html  
+
+springのメリット  
+https://stackoverflow.com/questions/10775522/raw-servlet-vs-spring-mvc
+
+https://www.quora.com/Which-is-better-Java-servlets-or-Spring-to-develop-a-good-website
+Springでは、国際化とローカリゼーション、sitemeshのより良い使用、依存性注入、aop、アドバイスなど、jspサーブレットでは得られない多くの機能が提供されます。  
+
+https://spring.pleiades.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html
+
+spring-boot  
+https://www.slideshare.net/OgawaTakeshi/spring-boot-71285225
+
+
