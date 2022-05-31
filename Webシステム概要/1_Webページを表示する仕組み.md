@@ -31,7 +31,7 @@ Webサイトを表示する仕組みがいまいちよく分からない人
 
 まず、Webサイト表示に関して登場する重要なキーワードについて簡単に説明します。  
 
-- クライザント（ブラウザ）  
+- クライアント（ブラウザ）  
 
 - Webサーバー  
 
@@ -42,10 +42,18 @@ Webサイトを表示する仕組みがいまいちよく分からない人
 - HTML 
 
 これらの大まかな関係は以下のようになります。  
-図  
 
-## クライアント⇔サーバー間の処理の流れ
-次に、クライアント⇔サーバー間の処理の流れを見ていきましょう。    
+<img src="画像/Webページの仕組み_重要キーワードの関連.png" style="width:480px;">
+
+・リソースの場所を示す「URL（Uniform Resource Locator）」
+・ウェブサーバーとクライアント間の通信の取り決めである「HTTP
+（Hypertext Transfer Protocol）」
+・コンテンツを記載する「HTML」
+
+## クライアント・サーバー間の処理の流れ
+クライアント・サーバー間の処理の流れをもう少し詳しく見ていきましょう。   
+ブラウザにWebページを表示するまでの過程をもう少し詳しく見ていきましょう。   
+
 
 1. （人）ブラウザ上にURLを入力
 
@@ -68,7 +76,7 @@ Htmlとは、ブラウザにどのような画面を描画するかを伝える�
 1. （ブラウザ）HTTPレスポンスからHTMLを取り出し、その内容に応じで画面を描画する。
 
 
-<img src="画像/Webサイト表示の流れ.png" style="width:680px;">
+<img src="画像/Webページの仕組み_Webサイト表示の流れ.png" style="width:680px;">
 
 
 以下それぞれのフェーズについて説明していきます。
@@ -117,12 +125,12 @@ DNSとは、インターネット上でドメイン名を管理・運用する�
 ブラウザはDNSサーバーに対して、ドメインに対するIPを教えて下さいとリクエストすることになります。  
 DNSに問い合わせる機能自体は実際はOSが持っており、ブラウザはOSが提供する機能を利用して問い合わせを行っています。  
 
-<img src="画像/DNSサーバーへの問い合わせ.png" style="width:680px;">
+<img src="画像/Webページの仕組み_DNSサーバーへの問い合わせ.png" style="width:680px;">
 
 DNSサーバーはOSに設定されています。  
 例えばWindowsだと以下の画面から設定できます。  
 
-<img src="画像/DNSの設定箇所.png" style="width:680px;">
+<img src="画像/Webページの仕組み_DNSの設定箇所.png" style="width:680px;">
 
 
 DNS関連はネットワーク的な話になるので、概要だけの説明になります。  
@@ -163,7 +171,7 @@ HTTPリクエストは、以下のような文字列になります。
 
 ```
 GET / HTTP/1.1
-Host: google.com
+Host: example.com
 Accept: text/html,application/xhtml+xmlsigned-exchange;v=b3;q=0.9
 Accept-Encoding: gzip, deflate
 Accept-Language: ja,en-US;q=0.9,en;q=0.8
