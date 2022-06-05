@@ -230,7 +230,7 @@ http://example.com?myText=textVal&mySelect=selectVal2&myCheck=checkVal&myRedio=r
 HTTPリクエストのリクエストボディに記載されます。  
 Content-Typeヘッダーにフォームデータ形式を表す`application/x-www-form-urlencoded`が指定されます。  
 例のformをsubmitした際のHTTPリクエストは以下になります。 
-```http
+```
 POST / HTTP/1.1
 Host: example.com
 Content-Type: application/x-www-form-urlencoded
@@ -273,25 +273,7 @@ GETとPOSTで以下のような特徴があります。
 それとは別に、ブラウザ上に読み込まれたJavascriptからリクエストを発行する事も出来ます。  
 この場合、Httpメッセージの作成やレスポンスに対する処理を自分でコーディングすることになります。  
 
-JavascriptからHTTP通信を発行するための関数やオブジェクトは仕様で定められており、各ブラウザに実装されています。  
-XMLRequestとFetchという、2種類の方法があります。 
 
-
-- XMLRequest  
-こちらは古くからある方法で、IEでも動作します。  
-ただコードが冗長になる為、IEのサポートが切れる2022/7以降はFetchを使った方がいいです。  
-記述例  
-```
-
-```
-- Fetch 
-こちらの方が新しい方法で、IE以外のブラウザなら対応しています。  
-XMLRequestと比べてコードもきれいに書けるため、IE対応が必要なければこちらを利用する方がいいです。  
-
-記述例  
-```
-
-```
 
 ### javascriptからのリクエストの特徴  
 javascriptからリクエストを発行しても、ブラウザは何もしません。  
@@ -324,29 +306,126 @@ gif
 
 検索結果用のWebページに遷移する場合と比べ、ページの再読み込みが発生しない為、ユーザーからすると反応が早く感じます。（サクサク動いているように感じるということです）  
 
+このようなJavascriptでHTTPリクエストを発行し画面の一部を置き換える仕組みは**ajax**とも呼ばれます。
 
-#### ajax
-上で説明した、JavascriptでHTTPリクエストを発行し画面の一部を置き換える仕組みを**ajax**とも呼ばれます。  
+### Javascriptの実装方法
+JavascriptからHTTP通信を発行するための関数やオブジェクトは仕様で定められており、各ブラウザに実装されています。  
+XMLRequestとFetchという、2種類の方法があります。 
+
+（どちらの方法でも、Webサーバーとの値のやり取りは、プログラムで解釈しやすり**Json**という形式の文字列で行うことが多いです。  
+Jsonについては[別記事]()で説明します。）   
+
+- XMLRequest  
+古くからある方法で、IEでも動作します。  
+ただコードが冗長になる為、IEのサポートが切れる2022/7以降はFetchを使った方がいいです。  
+(レスポンスに対する処理をコールバック関数として記述する為、冗長になりがちです。)   
+  
+  記述例  
+    ```js
+    const xmlHttpRequest = new XMLHttpRequest();
+
+    xmlHttpRequest.open( 'POST', 'http://example.com', false );
+ 
+    //ヘッダーを指定 
+    xmlHttpRequest.setRequestHeader( 'Content-Type', 'application/json');
+
+
+    //レスポンスが返ってきた際の処理
+    xmlHttpRequest.onreadystatechange = () => {
+      // readyStateが4: リクエストが終了して準備が完了
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        // レスポンスボディのjson文字列をJavascriptのオブジェクトに変換
+        const result = JSON.parse(xhr.responseText);      
+        
+        //以下取得した値を使った処理を記述       
+      }
+    }  
+ 
+    // データをリクエストボディに含めて送信する
+    const data = { id = 1, name = yamada}
+    xmlHttpRequest.send( JSON.stringify(data) );
+
+    ```
+- Fetch  
+こちらの方が新しい方法で、IE以外のブラウザなら対応しています。  
+XMLRequestと比べてコードもきれいに書けるため、IE対応が必要なければこちらを利用する方がいいです。  
+(Promiseという仕組みを利用しており、async、awaitという構文が使えます。)  
+  
+  記述例  
+   ```js
+   const data = { id = 1, name = yamada}
+
+   const response = await fetch('http://example.com', {
+       method: 'POST', //HTTPメソッドを指定
+     
+       headers: {
+         'Content-Type': 'application/json'
+       },  //ヘッダーを指定 
+   
+       body: JSON.stringify(data) // JavascriptのオブジェクトをJson文字列に変換してボディに設定
+    })
+
+    const result = await response.json(); // レスポンスボディのjsonをJavaScriptオブジェクトに変換
+   ```
+  
+どちらの場合も。送信されるリクエストメッセージは以下になります。  
+```http
+
+```
+
+
+この例の通り、Webサーバーとの値のやり取りは、プログラムで解釈しやすり**Json**という形式の文字列で行うことが多いです。 
+
+この例の通り、Webサーバーからのレスポンスでは、htmlではなく、プログラムで解釈しやすり**Json**という形式の文字列を返すことが多いです。  
+
+
+
+#### ajaxの実装
+上で説明したように、JavascriptでHTTPリクエストを発行し画面の一部を置き換える仕組みを**ajax**とも呼ばれます。  
 ユーザーエクスペリエンスを向上出来るため、今時のWebサイトではよく使われています。  
 
 ページの一部を書き換えるコードは以下のようになります。  
-例   
-```
+例 検索処理を行い結果を書き換える場合     
+```js
+const searchTextElement = document.getElementById("searchText")
+const data = { searchText = searchTextElement.value}
+
+const response = await fetch('http://example.com', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data) 
+})
+const result = await response.json();
+
+const resultElement = document.getElementById("result")
+
+resultElement.value = result.ResultText
 
 ```
 
 
-Webサーバーからのレスポンスでは、htmlではなく、プログラムで解釈しやすり**Json**という形式のファイルを返すことが多いです。 
-Jsonについては[別記事]()で説明します。   
 
 ## まとめ  
 
 以下、それぞれの呼び出し方の特徴をまとめました。  
 
-|    |  HTTPメソッド  |  HTTPレスポンスへの対応  |  画面の再読み込み  |    |
+|    |  HTTPメソッド  |  HTTPレスポンスへの対応  |  画面の再読み込み  |  URL  |
 | ---- | ---- | ---- | ---- | ---- |
-|  URLを直接入力   |  GET  | ブラウザが行う  | ブラウザが行う  |   |
-|  リンクから遷移  |  GET  | ブラウザが行う  | ブラウザが行う  |   |
-|  フォームデータの送信  |  GET or POST <br>(formタグのmethod属性で指定する)  | ブラウザが行う  | ブラウザが行う  |   |
-|  javascriptから送信  |  自由<br>（Httpメッセージ作成メソッドの引数で指定する。）  | javascriptでコーディング  | javascriptでコーディング  |   |
+|  URLを直接入力   |  GET  | ブラウザが行う  | 発生する  | 遷移先のURLになる  |
+|  リンクから遷移  |  GET  | ブラウザが行う  | 発生する  | 遷移先のURLになる  |
+|  フォームデータの送信  |  GET or POST <br>(formタグのmethod属性で指定する)  | ブラウザが行う  | 発生する  |  遷移先のURLになる |
+|  javascriptから送信  |  自由<br>（Httpメッセージ作成メソッドの引数で指定する。）  | javascriptでコーディング  | 発生しない  | 変化しない  |
+
+
+## 参考
+
+・[MDN HTMLフォーム](https://developer.mozilla.org/ja/docs/Learn/Forms)
+
+・[MDN Ajax](https://developer.mozilla.org/ja/docs/Web/Guide/AJAX)
+
+・[MDN Fetchの仕様](https://developer.mozilla.org/ja/docs/Web/API/Fetch_API/Using_Fetch)
+
+
 
