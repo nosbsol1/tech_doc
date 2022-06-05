@@ -14,7 +14,7 @@ JSONとは「JavaScript Object Notation」の略で、「JavaScriptのオブジ�
 
 また、配列やネストしたデータも表現できます。  
 例  
-```
+```json
 
 ```
 

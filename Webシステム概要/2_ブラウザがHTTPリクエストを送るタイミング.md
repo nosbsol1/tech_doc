@@ -1,25 +1,49 @@
 
+# ブラウザがHTTPリクエストを送るタイミング
+
+## なにこれ？
+
+
 ## ブラウザがHTTPリクエストを送るタイミング
 ブラウザがHTTPリクエストを送信するタイミングは以下になります。  
 
-### ブラウザURLを直接入力した場合  
+- ブラウザURLを直接入力した場合
+- ページ上のリンクから遷移した際 
+- フォームデータの送信時  
+- javascriptからのリクエスト
+
+以下それぞれについて説明していきます。  
+
+## ブラウザURLを直接入力した場合  
   入力されたURL（のホスト名のIP）に対してHTTPリクエストを送信します。  
   
   ブラウザが送信するHTTPはGETメソッドとなります。
   Webページ全体が再読み込みされ、javascriptの変数などの情報は全てクリアされます。  
 
-### ページ上のリンクから遷移した際  
-  例えばyahooのニュースクリックした際などの動作です。  
+　* Webページ全体の再読み込み  
+  この記事では、画面が一度真っ白になり、ブラウザのタブの右に読み込みマークが表示される遷移のことをこう呼ぶことにします。  
+
+  図  
+
+  別のURLへ遷移した際や、画面をリフレッシュした場合の動作の事です。  
+
+  
+
+## ページ上のリンクから遷移した際  
   URLを直接入力したときと動きは同じです。  
+  例えばyahooのニュースクリックした際などの動作です。  
 
   リンクはhtml上はaタグで作成されており、そのhref属性に指定されたURLにリクエストを発行します。  
-  ```
+  ```html
   <a href="https://google.com"></a>
   ```
 <br/>
 
+図  
 
-### フォームデータの送信時  
+
+
+## フォームデータの送信時  
 フォームとはhtmlの`<form>`タグで囲まれた部分の事で、画面上でユーザーが入力した情報をサーバーに送信する際などに利用します。  
 例えばユーザー登録画面で、顧客が入力した名前などの情報をサーバーに送る場合などです。  
 
@@ -30,8 +54,8 @@
   <button type="submit">送信</button>
 </form>
 
-Htmlは以下になります。  
-```
+このような入力フォームのHtmlは以下になります。  
+```html
 <form action="http://www.foo.com" method="GET">
   名前<input name="name"/>
   住所<input name="tel"/>
@@ -39,89 +63,185 @@ Htmlは以下になります。
 </form>
 ```
 
-`<form>`タグの中にある、`type="submit"`属性が指定された`<button>`をクリックすると、formタグのaction属性に指定されたURLにHTTPリクエストが送信されます。  
+### formタグの仕様
+`<form>`タグの中にある、`type="submit"`属性が指定された`<button>`をクリックすると、formタグのaction属性に指定されたURLにHTTPリクエストを送信し、遷移します。  
 （この動作を「フォームをサブミットする」などと言います。）    
 その際のHTTPメソッドは`method`属性で指定されたものになります。  
 `method`属性には`GET`、もしくは`POST`が指定できます。  
 
+例えば以下のformの場合
+```html
+<form action="http://www.foo.com" method="GET">
 
-#### フォームコントロール
-`<form>`タグの中には、人が値を入力できるHtm要素である**フォームコントロール**要素を配置します。  
-`<input>`や`<select>`などです。  
-
-・inputタグ  
-```<input name="tel">```  
-<input name="tel">  
-入力された値は`value`属性に設定されます。   
-```<input name="tel" value="000-0000-000">```  
-<input name="tel" value="000-0000-000">
-
-・selectタグ  
-```<select name="select"><option>値1</option><option>値2</option></select>```  
-<select name="select"><option>値1</option><option>値2</option></select>  
-
-選択されたoption要素にselected属性が付きます。  
-```<option selected>値2</option>```  
-<select name="select"><option>値1</option><option selected>値2</option></select>  
-
-他にも`<redio>`や`<checkbox>`などがあります。  
-
-入力された値はフォームコントロール毎に特定の属性に設定されます。  
-input要素の場合入力された値は`value`属性に設定されます。  
-```<input name="tel" value="000-0000-000">```  
-selectの場合は選択した要素にselected属性が付きます。  
-```<option selected>値2</option>```
-
-#### 入力値のサーバーへの送信
-**フォームコントロール**の入力値は、HTTPリクエストに記載されサーバー送信されます。  
-そのように記載されるかは、`method`に指定したHTTPメソッドによって異なります。  
-
-##### GETの場合  
-URLのクエリストリングに記載されます。  
-クエリストリングに以下の形式で記載されます。  
-`フォームコントロールのname属性の値=フォームコントロールに入力した値`
-
-例  
-```
-  <form method="GET" action="http://example.com/register">
-    <input name="name" value="名前１"/>
-    <input name="tel" value="000-0000-000"/>
-  </form>
-```
-<form method="GET" action="http://example.com/register">
-   <input name="name" value="名前1"/>
-  <input name="tel" value="000-0000-000"/>
+    <button type="submit">送信</button>
 </form>
-  
-このformをsubmitした際のクエリストリングは以下になります。  
-```
-http://example.com/register?name=名前1&tel=000-0000-000
 ```
 
-※全角文字はURLエンコードという処理がされたものが送信されます。  
-  詳しくは別記事で解説します。  
+送信ボタンを押した際のリクエスト先は以下になります。  
+```
+GET http://www.foo.com
+```
 
-##### POSTの場合  
+リクエスト先のURLに遷移しWebページ全体の再読み込みされます。 
+（その為リクエスト先のURLはHTMLを返す必要があります。） 
+
+また、フォームデータの送信時、**フォームコントロールに入力されたデータがリクエストに記載されます。**  
+
+### フォームコントロールとは
+人が値を入力・選択できるHTML要素のことです。  
+（テキストボックスやチェックボックスなど）  
+
+`<form>`タグの中に記載することが多いです。  
+主なフォームコントロールは以下になります。  
+
+#### text  
+テキストボックスを表示します。  
+`input`タグで`type`属性に`text`を指定します。  
+
+```html
+テキスト<input type="text" name="myText">
+```
+
+図  
+
+入力された値は`value`属性に設定されます。   
+```html
+テキスト<input type="text" name="myText" value="textVal">
+```  
+
+図  
+
+#### select  
+セレクトリクストを表示します。  
+`select`タグの中に`option`タグを複数記述します。  
+`option`タグが選択肢を表します。  
+```html
+  <select name="mySelect">
+    <option value="selectVal1">値1</option>
+    <option value="selectVal2">値2</option>
+  </select>
+```  
+
+図  
+
+選択された`option`要素に`selected`属性が付きます。  
+```html
+  <select name="mySelect">
+    <option value="selectVal1">値1</option>
+    <option value="selectVal2" selected>値2</option>
+  </select>
+```   
+
+#### checkbox
+チェックボックスを表示します。 
+`input`タグで`type`属性に`checkbox`を指定します。  
+```html
+<input type="checkbox" name="myCheck">
+```
+
+チェックされた場合は`checked`属性が付きます。  
+```html
+<input type="checkbox" name="myCheck" checked>チェックボックス
+```
+
+#### radio
+ラジオボタンを表示します。  
+`input`タグで`type`属性に`radio`を指定します。  
+同じname属性のものがグループ化され、グループ内で一つしか同時に選択できません。  
+
+```html
+値1<input type="radio" name="myRedio" value="redioVal1">
+値2<input type="radio" name="myRedio" value="redioVal2">
+値3<input type="radio" name="myRedio" value="redioVal3">
+```
+
+選択された要素に`checked`属性が付きます。   
+
+```html
+値1<input type="radio" name="myRedio" value="redioVal1">
+値2<input type="radio" name="myRedio" value="redioVal2">
+値3<input type="radio" name="myRedio" value="redioVal3" checked>
+```
+
+### 入力値のサーバーへの送信
+`form`タグ内のフォームコントロールに入力・選択された値は、フォームサブミット時にHTTPリクエストに記載されます。  
+
+記載される形式は`パラメータ名=値`です。   
+それぞれのフォームコントロールで以下のようになります。  
+
+- text  
+`name`属性の値=`value`属性の値
+
+- select  
+`select`要素の`name`属性の値=`selected`属性のついた`option`タグの`value属性`の値
+
+- checkbox  
+（`checked`属性が付いたもののみ送信される） 
+  - value属性がある場合  
+  `name`属性の値=`value`属性の値
+  - value属性が無い場合  
+  `name`属性の値=on
+
+- redio  
+`name`属性の値=`checked`属性のついたタグの`value属性`の値
+
+
+### HTTPメソッド毎の送信方法の違い
+どのようにリクエストに記載されるかは、`method`に指定したHTTPメソッド(GET or POST)によって異なります。  
+
+以下のformを送信する場合を例に説明します。  
+```html
+<form action="http://example.com" method="">
+ <div>
+   テキスト<input type="text" name="myText" value="textVal">
+ </div>
+ 
+ <div>
+   <select name="mySelect">
+      <option value="selectVal1">値1</option>
+      <option value="selectVal2" selected>値2</option>
+   </select>
+ </div>
+ 
+ <div>
+   <input type="checkbox" name="myCheck" value="checkVal" checked>チェックボックス
+ </div>
+ <div>
+    値1<input type="radio" name="myRedio" value="redioVal1">
+    値2<input type="radio" name="myRedio" value="redioVal2">
+    値3<input type="radio" name="myRedio" value="redioVal3" checked>
+   </div>
+
+   <button type="submit">送信</button>
+</form>
+```
+
+<img src="画像/ブラウザがHTTPリクエストを送るタイミング_formのサブミット例_ブラウザ画面.png" style="width:240px;">  
+
+#### methodにGETを指定した場合 
+URLのクエリストリングにフォームコントロールの値が記載されます。  
+
+例のformをsubmitした際のクエリストリングは以下になります。  
+```
+http://example.com?myText=textVal&mySelect=selectVal2&myCheck=checkVal&myRedio=redioVal3
+```
+
+#### methodにPOSTを指定した場合  
 HTTPリクエストのリクエストボディに記載されます。  
-形式はクエリストリングの場合と同じです。  
-`フォームコントロールのname属性の値=フォームコントロールに入力した値`
-
-```
-  <form method="POST" action="http://example.com/register">
-    <input name="name" value="名前１"/>
-    <input name="tel" value="000-0000-000"/>
-  </form>
-```
-このformをsubmitした際のHTTPリクエストは以下になります。
-  HTTPリクエストの例
-```
-POST /register HTTP/1.1
+Content-Typeヘッダーにフォームデータ形式を表す`application/x-www-form-urlencoded`が指定されます。  
+例のformをsubmitした際のHTTPリクエストは以下になります。 
+```http
+POST / HTTP/1.1
 Host: example.com
-他のヘッダーは省略
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 69
 
-name=名前1&tel=000-0000-000
-
+myText=textVal&mySelect=selectVal2&myCheck=checkVal&myRedio=redioVal3
 ```
+
+
+※どちらの場合も、全角文字はURLエンコードという処理がされたものが送信されます。  
+詳しくは[別記事]()で解説します。  
 
 #### GETとPOSTのどちらを選ぶか  
 GETとPOSTで以下のような特徴があります。 
@@ -140,18 +260,18 @@ GETとPOSTで以下のような特徴があります。
   （登録、削除を行う処理のURLなど）  
   
   またパラメータに個人情報や機密情報が含まれる場合も、URLに表示されることを避けPOSTを利用することが多いです。  
-  （URLを別の人に見られる可能性があります。  
-  またWebサーバー側のログを取っている場合、リクエストされたURLを記録している場合が多く、パスワードなどをGETで送るとそのまま記録されてしまいます。  
+  （URLにパラメータが表示されると別の人に見られる可能性があります。  
+  またWebサーバー側のログを取っている場合、リクエストされたURLを記録している場合が多く、ログにパラメータが保存されてしまいます。  
   ですが、リクエストボディまでは記録しないことが多いです。）
   
   リクエストボディには文字数の制限がない為、パラメータ数が多くなる場合は参照系の画面でも利用されます。  
 
 
-### javascriptからのリクエスト  
+## Javascriptからのリクエスト  
 
-上の3つは、ブラウザがHTTPリクエストの作成・送信とレスポンスに対する処理（Htmlの描画）を自動で行ってくれました。  
+上の3つの方法は、HTTPリクエストの作成・送信と、レスポンスに対する処理（Htmlの描画）をブラウザが自動で行ってくれました。  
 それとは別に、ブラウザ上に読み込まれたJavascriptからリクエストを発行する事も出来ます。  
-この場合、Httpメッセージの作成やレスポンスに対する処理を自分でコーディングしなくてはいけません。  
+この場合、Httpメッセージの作成やレスポンスに対する処理を自分でコーディングすることになります。  
 
 JavascriptからHTTP通信を発行するための関数やオブジェクトは仕様で定められており、各ブラウザに実装されています。  
 XMLRequestとFetchという、2種類の方法があります。 
@@ -173,7 +293,7 @@ XMLRequestと比べてコードもきれいに書けるため、IE対応が必�
 
 ```
 
-#### javascriptからのリクエストの特徴  
+### javascriptからのリクエストの特徴  
 javascriptからリクエストを発行しても、ブラウザは何もしません。  
 URLを入力してページを開いた時のような、ページの再読み込みや画面の再描画は行いませんし、ブラウザ上のURLも変更されません。  
 その為、ブラウザを操作しているユーザーに気付かれずにリクエストを発行することが出来ます。  
@@ -185,12 +305,12 @@ URLを入力してページを開いた時のような、ページの再読み�
 
 javascriptからのリクエスト発行は主に以下の用途で使われます。  
 
-- ログの送信  
+#### ログの送信  
 ボタンのクリックなど、ユーザーの行動ログをサーバーに送る際に利用します。  
 前述した通りリクエストを発行してもブラウザ上は何の変化も無い為、ユーザーに影響を与えずログを送信できます。  
 
 
-- サーバーからの情報をもとに画面の一部を書き換える  
+#### サーバーからの情報をもとに画面の一部を書き換える  
 ブラウザで動作するjavascriptには、表示中のHtml要素を書き変え再描画出来る機能（API）が用意されています。  
 （そのようなHtmlを操作する為のAPIを**DOM**といいます。）  
 
@@ -202,10 +322,11 @@ javascriptからのリクエスト発行は主に以下の用途で使われま�
 gif  
 
 
-図  
-
 検索結果用のWebページに遷移する場合と比べ、ページの再読み込みが発生しない為、ユーザーからすると反応が早く感じます。（サクサク動いているように感じるということです）  
-このようにJavascriptでHTTPリクエストを発行し画面の一部を置き換える仕組みを**ajax**と呼びます。  
+
+
+#### ajax
+上で説明した、JavascriptでHTTPリクエストを発行し画面の一部を置き換える仕組みを**ajax**とも呼ばれます。  
 ユーザーエクスペリエンスを向上出来るため、今時のWebサイトではよく使われています。  
 
 ページの一部を書き換えるコードは以下のようになります。  
@@ -215,13 +336,14 @@ gif
 ```
 
 
-Webサーバーからのレスポンスでは、htmlではなく、プログラムで解釈しやすり**Json**という形式のファイルを返すことが多いです。  
+Webサーバーからのレスポンスでは、htmlではなく、プログラムで解釈しやすり**Json**という形式のファイルを返すことが多いです。 
+Jsonについては[別記事]()で説明します。   
 
-### ブラウザがHTTPリクエストを送るタイミングまとめ  
+## まとめ  
 
 以下、それぞれの呼び出し方の特徴をまとめました。  
 
-|    |  HTTPメソッド  |  HTTPリクエストの送信  |  HTTPレスポンスへの対応  |    |
+|    |  HTTPメソッド  |  HTTPレスポンスへの対応  |  画面の再読み込み  |    |
 | ---- | ---- | ---- | ---- | ---- |
 |  URLを直接入力   |  GET  | ブラウザが行う  | ブラウザが行う  |   |
 |  リンクから遷移  |  GET  | ブラウザが行う  | ブラウザが行う  |   |
