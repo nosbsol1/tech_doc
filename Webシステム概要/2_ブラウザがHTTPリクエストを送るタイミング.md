@@ -306,13 +306,13 @@ gif
 
 検索結果用のWebページに遷移する場合と比べ、ページの再読み込みが発生しない為、ユーザーからすると反応が早く感じます。（サクサク動いているように感じるということです）  
 
-このようなJavascriptでHTTPリクエストを発行し画面の一部を置き換える仕組みは**ajax**とも呼ばれます。
+このような、JavascriptでHTTPリクエストを発行し画面の一部を置き換える仕組みは**ajax**とも呼ばれます。
 
-### Javascriptの実装方法
+### HTTP通信処理の実装方法
 JavascriptからHTTP通信を発行するための関数やオブジェクトは仕様で定められており、各ブラウザに実装されています。  
 XMLRequestとFetchという、2種類の方法があります。 
 
-（どちらの方法でも、Webサーバーとの値のやり取りは、プログラムで解釈しやすり**Json**という形式の文字列で行うことが多いです。  
+（どちらの方法でも、Webサーバーとの値のやり取りは、プログラムで解釈しやすい**Json**という形式の文字列で行うことが多いです。  
 Jsonについては[別記事]()で説明します。）   
 
 - XMLRequest  
@@ -327,7 +327,7 @@ Jsonについては[別記事]()で説明します。）
     xmlHttpRequest.open( 'POST', 'http://example.com', false );
  
     //ヘッダーを指定 
-    xmlHttpRequest.setRequestHeader( 'Content-Type', 'application/json');
+    xmlHttpRequest.setRequestHeader('Content-Type', 'application/json');
 
 
     //レスポンスが返ってきた際の処理
@@ -370,42 +370,49 @@ XMLRequestと比べてコードもきれいに書けるため、IE対応が必�
   
 どちらの場合も。送信されるリクエストメッセージは以下になります。  
 ```http
+POST / HTTP/1.1
+Host: example.com
+Content-Type: application/json
+Content-Length: 24
 
+{"id"=1,"name"="yamada"}
 ```
-
-
-この例の通り、Webサーバーとの値のやり取りは、プログラムで解釈しやすり**Json**という形式の文字列で行うことが多いです。 
-
-この例の通り、Webサーバーからのレスポンスでは、htmlではなく、プログラムで解釈しやすり**Json**という形式の文字列を返すことが多いです。  
-
 
 
 #### ajaxの実装
-上で説明したように、JavascriptでHTTPリクエストを発行し画面の一部を置き換える仕組みを**ajax**とも呼ばれます。  
+上で説明したように、JavascriptでHTTPリクエストを発行し画面の一部を置き換える仕組みは**ajax**とも呼ばれます。  
 ユーザーエクスペリエンスを向上出来るため、今時のWebサイトではよく使われています。  
 
-ページの一部を書き換えるコードは以下のようになります。  
+実際のコードのイメージは以下になります。    
 例 検索処理を行い結果を書き換える場合     
 ```js
-const searchTextElement = document.getElementById("searchText")
-const data = { searchText = searchTextElement.value}
-
-const response = await fetch('http://example.com', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data) 
-})
-const result = await response.json();
-
-const resultElement = document.getElementById("result")
-
-resultElement.value = result.ResultText
-
+const search = () => {
+    const searchTextElement = document.getElementById("searchText")
+    const data = { searchText = searchTextElement.value}
+    
+    const response = await fetch('http://example.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data) //検索フィールドの値を送信
+    })
+    
+    //レスポンスとして、{"resultText": "TEST"}という文字列が返ってき    たとする
+    const result = await response.json(); 
+    
+    const resultElement = document.getElementById("result")
+    resultElement.text = result.ResultText
+    
+    //resultElementの表示が「TEST」になる。
+}
+```
+以下のようにボタンクリックなどのイベントで実行することが多いです。  
+```html
+<button onclick="search">検索</button>
 ```
 
-
+図  
 
 ## まとめ  
 
@@ -425,7 +432,9 @@ resultElement.value = result.ResultText
 
 ・[MDN Ajax](https://developer.mozilla.org/ja/docs/Web/Guide/AJAX)
 
-・[MDN Fetchの仕様](https://developer.mozilla.org/ja/docs/Web/API/Fetch_API/Using_Fetch)
+・[MDN XMLHttpRequestの使用](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest)  
+
+・[MDN Fetchの使用](https://developer.mozilla.org/ja/docs/Web/API/Fetch_API/Using_Fetch)
 
 
 
