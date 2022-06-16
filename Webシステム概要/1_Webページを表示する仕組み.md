@@ -331,7 +331,7 @@ HTML言語で書かれた文字列をブラウザに渡すと、ブラウザは�
 HTMLはタグを組み合わせることで、どのような画面を描画すべきか定義します。  
 
 もう少し複雑なHTMLの例です。  
-```html
+```
 <!DOCTYPE html> 
 <html>
   <head>
@@ -339,21 +339,13 @@ HTMLはタグを組み合わせることで、どのような画面を描画す�
   </head>
   <body>
     <h1>見出しです</h1>
+    <a href="http://example.com">リンク</a>
     <button>ボタン</button>
   </body>
 <html>
 ```
 これは、ブラウザ上で以下のように描画されます。  
-図  
-<html>
-  <head>
-    <title>タイトルです</title>
-  </head>
-  <body>
-    <h1>見出しです</h1>
-    <button>ボタン</button>
-  </body>
-<html>
+<img src="画像/HTMLとは_実際のHTML表示例.png  " style="width:160px;">  
 
 
 HTMLの仕様は、WHATWGという標準化団体により[策定](https://html.spec.whatwg.org/)されています。   
@@ -427,8 +419,7 @@ HTMLの要素のスタイルやレイアウトを、どのように表現する�
 
 上記のHtmlは以下のように描画されます。  
 図  
-<h1 style="background-color:blue;">見出しです</h1>
-  
+<img src="画像/CSSとは_見出しサンプル.png" style="width:160px;">
 
 他にも、以下のような定義が可能です。
 
