@@ -2,7 +2,10 @@
 # ブラウザがHTTPリクエストを送るタイミング
 
 ## なにこれ？
+Webページを表示する仕組みを説明した[記事](1_Webページを表示する仕組み.md)では、ブラウザにURLを入力してWebページを表示する場合を例にしました。  
+それ以外にも、ブラウザからHTTPリクエストが発行されるタイミングがいくつかあります。  
 
+本記事ではそのタイミングについて説明します。  
 
 ## ブラウザがHTTPリクエストを送るタイミング
 ブラウザがHTTPリクエストを送信するタイミングは以下になります。  
@@ -22,12 +25,11 @@
 
 　* Webページ全体の再読み込み  
   この記事では、画面が一度真っ白になり、ブラウザのタブの右に読み込みマークが表示される遷移のことをこう呼ぶことにします。  
+  別のURLへ遷移した際や、画面をリフレッシュした場合の動作の事です。  
 
   図  
 
-  別のURLへ遷移した際や、画面をリフレッシュした場合の動作の事です。  
 
-  
 
 ## ページ上のリンクから遷移した際  
   URLを直接入力したときと動きは同じです。  
@@ -35,11 +37,9 @@
 
   リンクはhtml上はaタグで作成されており、そのhref属性に指定されたURLにリクエストを発行します。  
   ```html
-  <a href="https://google.com"></a>
+  <a href="https://google.com">リンク</a>
   ```
-<br/>
-
-図  
+<img src="画像/ブラウザがHTTPリクエストを送るタイミング_リンク.png" style="width:80px;">  
 
 
 
@@ -48,13 +48,9 @@
 例えばユーザー登録画面で、顧客が入力した名前などの情報をサーバーに送る場合などです。  
 
 例  
-<form action="http://www.foo.com" method="GET">
-  名前 <input name="name"/>
-  住所 <input name="tel"/>
-  <button type="submit">送信</button>
-</form>
+<img src="画像/ブラウザがHTTPリクエストを送るタイミング_フォームデータ例.png" style="width:80px;">  
 
-このような入力フォームのHtmlは以下になります。  
+この入力フォームのHtmlは以下になります。  
 ```html
 <form action="http://www.foo.com" method="GET">
   名前<input name="name"/>
@@ -102,14 +98,15 @@ GET http://www.foo.com
 テキスト<input type="text" name="myText">
 ```
 
-図  
+<img src="画像/ブラウザがHTTPリクエストを送るタイミング_フォームコントロール_テキスト_値無し.png" style="width:80px;">    
+
 
 入力された値は`value`属性に設定されます。   
 ```html
 テキスト<input type="text" name="myText" value="textVal">
 ```  
 
-図  
+<img src="画像/ブラウザがHTTPリクエストを送るタイミング_フォームコントロール_テキスト_値あり.png" style="width:80px;">    
 
 #### select  
 セレクトリクストを表示します。  
@@ -122,7 +119,7 @@ GET http://www.foo.com
   </select>
 ```  
 
-図  
+<img src="画像/ブラウザがHTTPリクエストを送るタイミング_フォームコントロール_セレクト_値なし.png" style="width:80px;">  
 
 選択された`option`要素に`selected`属性が付きます。  
 ```html
@@ -131,18 +128,22 @@ GET http://www.foo.com
     <option value="selectVal2" selected>値2</option>
   </select>
 ```   
+<img src="画像/ブラウザがHTTPリクエストを送るタイミング_フォームコントロール_セレクト_値あり.png" style="width:80px;">  
 
 #### checkbox
 チェックボックスを表示します。 
 `input`タグで`type`属性に`checkbox`を指定します。  
 ```html
-<input type="checkbox" name="myCheck">
+<input type="checkbox" name="myCheck">チェックボックス
 ```
+<img src="画像/ブラウザがHTTPリクエストを送るタイミング_フォームコントロール_チェックボックス_値なし.png" style="width:80px;">  
+
 
 チェックされた場合は`checked`属性が付きます。  
 ```html
 <input type="checkbox" name="myCheck" checked>チェックボックス
 ```
+<img src="画像/ブラウザがHTTPリクエストを送るタイミング_フォームコントロール_チェックボックス_値あり.png" style="width:80px;">  
 
 #### radio
 ラジオボタンを表示します。  
@@ -154,6 +155,7 @@ GET http://www.foo.com
 値2<input type="radio" name="myRedio" value="redioVal2">
 値3<input type="radio" name="myRedio" value="redioVal3">
 ```
+<img src="画像/ブラウザがHTTPリクエストを送るタイミング_フォームコントロール_ラジオボタン_値なし.png" style="width:80px;">  
 
 選択された要素に`checked`属性が付きます。   
 
@@ -162,6 +164,8 @@ GET http://www.foo.com
 値2<input type="radio" name="myRedio" value="redioVal2">
 値3<input type="radio" name="myRedio" value="redioVal3" checked>
 ```
+
+<img src="画像/ブラウザがHTTPリクエストを送るタイミング_フォームコントロール_ラジオボタン_値あり.png" style="width:80px;">  
 
 ### 入力値のサーバーへの送信
 `form`タグ内のフォームコントロールに入力・選択された値は、フォームサブミット時にHTTPリクエストに記載されます。  
@@ -230,7 +234,7 @@ http://example.com?myText=textVal&mySelect=selectVal2&myCheck=checkVal&myRedio=r
 HTTPリクエストのリクエストボディに記載されます。  
 Content-Typeヘッダーにフォームデータ形式を表す`application/x-www-form-urlencoded`が指定されます。  
 例のformをsubmitした際のHTTPリクエストは以下になります。 
-```
+```http
 POST / HTTP/1.1
 Host: example.com
 Content-Type: application/x-www-form-urlencoded
@@ -398,7 +402,7 @@ const search = () => {
         body: JSON.stringify(data) //検索フィールドの値を送信
     })
     
-    //レスポンスとして、{"resultText": "TEST"}という文字列が返ってき    たとする
+    //レスポンスとして、{"resultText": "TEST"}という文字列が返ってきたとする
     const result = await response.json(); 
     
     const resultElement = document.getElementById("result")
