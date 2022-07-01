@@ -1,0 +1,29 @@
+﻿@model (string Sql, List<MembersModel> Result)
+
+@{
+    var sql = string.IsNullOrEmpty(Model.Sql) ? "" : Model.Sql;
+    var list = Model.Result ?? new List<MembersModel>();
+    ViewData["Title"] = "SQLインジェクション";
+}
+
+<form method="POST" asp-controller="SqlInjection" asp-action="Search">
+    <div>Name: <input name="name"/></div>
+    <input type="submit" value="検索"/>
+</form>
+
+<h5>クエリ</h5>
+<p style="color:white">' OR 1 =1 OR '' = '</p>
+<p style="color:white">' OR 1 =1; INSERT INTO members (name, deleted_flag) VALUES ('佐藤 太郎', 0); SELECT * FROM members WHERE '1' = '1</p>
+
+
+<h4>実行SQL</h4>
+<p>@sql</p>
+
+<h4>結果</h4>
+@foreach (var each in list)
+{
+    <p>
+        @($"{each.name} {(each.deleted_flag == 1 ? "削除済み" : "")}")
+    </p>
+}
+

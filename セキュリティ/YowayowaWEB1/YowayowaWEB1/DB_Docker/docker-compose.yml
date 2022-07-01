@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  # MySQL
+  mydb:
+    build:
+        context: ./mysql
+        dockerfile: Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      # MYSQL_DATABASE: sas_repair
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+      TZ: 'Asia/Tokyo'
+    # command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+    # - ./mysql/db/data:/var/lib/mysql #永続化する場合
+      - ./mysql/db/conf:/etc/mysql/conf.d
+      - ./mysql/db/init:/docker-entrypoint-initdb.d
+    ports:
+      - 3305:3306

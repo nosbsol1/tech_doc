@@ -1,0 +1,29 @@
+﻿@model List<BoardModel>
+
+@{
+    var list = Model ?? new List<BoardModel>();
+    ViewData["Title"] = "CSRF";
+    var strLink = @"<a href='https://localhost:5001/Csrf/insert?name=test&comment=aaa';>クリックしてみて(csrf)</a>";
+    var strLink2 = @"<a href='https://localhost:5001/Xss/insert?name=test&comment=aaa';>クリックしてみて(xss)</a>";
+}
+
+ @*asp-antiforgery="false"は偽造防止トークンを生成しない 。*@
+<form method="POST" asp-antiforgery="false" asp-controller="Csrf" asp-action="Insert">
+    <div>氏名: <input name="name" value="名無し"/></div>
+    <div>コメント: <input name="comment" style="width:80%"/></div>
+    <input type="submit" />
+</form>
+
+<h4>リンク</h4>
+<p style="color:white">@strLink</p>
+<p style="color:white">@strLink2</p>
+
+<h4>掲示板</h4>
+@foreach (var each in list)
+{
+    <p>
+        <div>@($"{each.name}さんがコメントしました。")</div>
+        <div>@Html.Raw(each.comment)</div>
+    </p>
+}
+
